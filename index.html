@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b0d14">
+<title>Supernova — Free Online Games</title>
+<meta name="supernova-build" content="same-origin-games-v4">
+<style>
+:root{
+  --bg:#0b0d14;--bg2:#10131d;--panel:#151924;--panel2:#1b1f2c;
+  --text:#f7f7fb;--muted:#969aaa;--line:#252a38;--accent:#8d7cff;
+  --sidebar:62px;--max:1450px;
+}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overflow-x:hidden}
+button,input{font:inherit}
+button{cursor:pointer}
+body:after{content:"";position:fixed;z-index:-1;inset:0;background:radial-gradient(circle at 50% -15%,#30314c 0,transparent 34%),radial-gradient(circle at 85% 50%,#17162b 0,transparent 35%)}
+
+/* LEFT RAIL */
+.rail{
+ position:fixed;z-index:50;left:0;top:0;bottom:0;width:var(--sidebar);
+ background:#10121b;border-right:1px solid var(--line);
+ display:flex;align-items:center;flex-direction:column;padding:13px 0;gap:8px
+}
+.rail-logo{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(135deg,#7465ff,#a78cff);font-size:21px;font-weight:1000;margin-bottom:13px;box-shadow:0 5px 20px #7164ff33}
+.rail-btn{width:42px;height:42px;border:0;border-radius:10px;background:transparent;color:#858b9d;font-size:20px;display:grid;place-items:center}
+.rail-btn:hover,.rail-btn.active{background:#1b1f2c;color:#fff}
+.rail-btn.active{box-shadow:inset 3px 0 #8c7dff}
+
+/* TOP BAR */
+.top{
+ position:sticky;z-index:40;top:0;margin-left:var(--sidebar);height:76px;
+ background:rgba(11,13,20,.93);border-bottom:1px solid #1d2130;backdrop-filter:blur(15px)
+}
+.top-inner{max-width:var(--max);height:100%;margin:auto;display:flex;align-items:center;padding:0 18px;gap:22px}
+.brand{font-weight:1000;font-size:23px;letter-spacing:-.7px;white-space:nowrap}
+.brand b{color:#8d7cff}
+.search-wrap{flex:1;max-width:620px;margin:auto;position:relative}
+.search{width:100%;height:46px;border:0;outline:0;border-radius:24px;background:#292c43;color:white;padding:0 48px 0 20px;font-size:16px}
+.search::placeholder{color:#a4a7bb}
+.search:focus{background:#30344d;box-shadow:0 0 0 2px #7669d055}
+.search-icon{position:absolute;right:17px;top:12px;color:#9fa4b8;font-size:20px}
+.top-actions{display:flex;gap:10px}
+.top-action{height:44px;min-width:44px;padding:0 12px;border:0;border-radius:22px;background:#1a1e2a;color:#dfe2ed;font-weight:800}
+.top-action:hover{background:#242938}
+.avatar{width:44px;padding:0;border-radius:50%;background:linear-gradient(135deg,#55b9ff,#796cff);color:#fff}
+
+/* CONTENT */
+.page{margin-left:var(--sidebar)}
+.container{max-width:var(--max);margin:auto;padding:0 18px 70px}
+.category-row{display:flex;gap:7px;overflow:auto;padding:15px 0 3px;scrollbar-width:none}
+.category-row::-webkit-scrollbar{display:none}
+.cat{flex:0 0 auto;border:0;border-radius:9px;padding:9px 14px;background:transparent;color:#a8adbd;font-weight:750}
+.cat:hover,.cat.active{background:#202434;color:#fff}
+.cat.active{box-shadow:inset 0 -2px #8d7cff}
+
+/* CONTINUE */
+.section{margin-top:26px}
+.section-title{font-size:20px;line-height:1.2;margin:0 0 14px;font-weight:850;display:flex;align-items:center;gap:9px}
+.section-title .arrow{font-size:25px;color:#b8bbca}
+.continue{display:flex;gap:11px;overflow-x:auto;padding:2px 1px 7px;scrollbar-width:thin}
+.continue-card{flex:0 0 98px}
+.continue-card .cover{height:98px;border-radius:15px}
+.continue-card .name{font-size:12px;font-weight:750;margin-top:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* HERO / TOP GAMES */
+.hero-grid{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(250px,.78fr) minmax(250px,.78fr);gap:10px}
+.hero-card{position:relative;min-height:235px;border-radius:16px;overflow:hidden;background:#1b2030;cursor:pointer;border:1px solid #242a3b}
+.hero-card.large{grid-row:span 2;min-height:480px}
+.hero-card:hover{transform:translateY(-2px)}
+.hero-bg{position:absolute;inset:0;background:linear-gradient(135deg,#152b2b,#4c7447 55%,#9cc45d)}
+.hero-card:nth-child(2) .hero-bg{background:linear-gradient(135deg,#1e253c,#465cc6,#7b64ff)}
+.hero-card:nth-child(3) .hero-bg{background:linear-gradient(135deg,#271f35,#8d4b80,#ef8c73)}
+.hero-card:nth-child(4) .hero-bg{background:linear-gradient(135deg,#232b33,#566574,#b9d0df)}
+.hero-bg:after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#000b,transparent 62%)}
+.hero-art{position:absolute;inset:0;display:grid;place-items:center;font-size:105px;filter:drop-shadow(0 14px 15px #0007)}
+.hero-card.large .hero-art{font-size:155px}
+.hero-info{position:absolute;z-index:2;left:16px;right:16px;bottom:15px}
+.hero-title{font-size:20px;font-weight:950;text-shadow:0 2px 10px #000}
+.hero-sub{font-size:12px;color:#e1e3eb;margin-top:3px}
+.play-dot{position:absolute;z-index:3;right:13px;bottom:13px;width:39px;height:39px;border:0;border-radius:50%;background:#fff;color:#111;font-size:16px;box-shadow:0 4px 15px #0006}
+
+/* GRIDS */
+.game-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:11px}
+.game-card{min-width:0;cursor:pointer}
+.cover{height:145px;border-radius:13px;overflow:hidden;position:relative;background:linear-gradient(135deg,#28314a,#563f7c);border:1px solid #242a38;box-shadow:0 5px 15px #0003}
+.cover img{width:100%;height:100%;display:block;object-fit:cover}
+.cover-placeholder{position:absolute;inset:0;display:grid;place-items:center;font-size:58px;background:linear-gradient(135deg,#202b47,#553b71)}
+.badge{position:absolute;left:8px;top:8px;padding:4px 7px;border-radius:6px;background:#fff;color:#20202a;font-size:10px;font-weight:950}
+.game-card:hover .cover{transform:translateY(-3px);border-color:#515b76;box-shadow:0 12px 25px #0007}
+.game-name{font-size:13px;font-weight:800;margin-top:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.game-meta{font-size:11px;color:#777e92;margin-top:3px}
+.loading,.empty{padding:40px;text-align:center;color:#8f95a8;background:#11141e;border:1px solid var(--line);border-radius:14px}
+
+/* GAME PLAYER */
+#player{display:none;position:fixed;z-index:200;inset:0;background:#05060a;flex-direction:column}
+.player-top{height:62px;display:flex;align-items:center;gap:10px;padding:0 14px;background:#11141d;border-bottom:1px solid #252938}
+.player-btn{height:40px;padding:0 13px;border:0;border-radius:9px;background:#202534;color:#fff;font-weight:800}
+.player-title{font-weight:850;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.player-main{min-height:0;flex:1;display:flex;align-items:center;justify-content:center;padding:12px}
+#game-frame{width:100%;height:100%;border:0;background:#000;border-radius:10px}
+.player-note{position:absolute;left:18px;bottom:17px;background:#10131ccc;color:#b7bdce;border:1px solid #303548;padding:8px 10px;border-radius:8px;font-size:11px;pointer-events:none}
+
+/* FOOTER */
+footer{border-top:1px solid var(--line);color:#6f7587;padding:28px 18px;margin-left:var(--sidebar);text-align:center;font-size:12px}
+
+/* RESPONSIVE */
+@media(max-width:1100px){.game-grid{grid-template-columns:repeat(4,1fr)}.hero-grid{grid-template-columns:1.4fr 1fr}.hero-card.large{grid-row:span 2}.hero-card:nth-child(4){display:none}}
+@media(max-width:760px){
+ :root{--sidebar:0px}.rail{display:none}.top{margin-left:0;height:66px}.brand{font-size:19px}.top-actions{display:none}.container{padding:0 12px 50px}.category-row{margin:0 -12px;padding-left:12px}
+ .hero-grid{grid-template-columns:1fr 1fr}.hero-card.large{grid-column:span 2;min-height:260px}.hero-card{min-height:180px}.hero-card:nth-child(4){display:block}.game-grid{grid-template-columns:repeat(3,1fr);gap:9px}.cover{height:115px}
+}
+@media(max-width:480px){.brand{display:none}.game-grid{grid-template-columns:repeat(2,1fr)}.cover{height:130px}.hero-grid{grid-template-columns:1fr}.hero-card.large{grid-column:auto;min-height:250px}.hero-card{min-height:170px}.hero-card:nth-child(4){display:none}}
+</style>
+</head>
+<body>
+
+<aside class="rail">
+  <div class="rail-logo">✦</div>
+  <button class="rail-btn active" title="Home" onclick="home()">⌂</button>
+  <button class="rail-btn" title="Recently played" onclick="document.querySelector('#continueSection').scrollIntoView({behavior:'smooth'})">◷</button>
+  <button class="rail-btn" title="New games" onclick="scrollToId('newSection')">✦</button>
+  <button class="rail-btn" title="Popular" onclick="scrollToId('popularSection')">♨</button>
+  <button class="rail-btn" title="Random game" onclick="randomGame()">⤨</button>
+  <button class="rail-btn" title="Categories" onclick="scrollToId('popularSection')">▦</button>
+</aside>
+
+<header class="top">
+  <div class="top-inner">
+    <div class="brand">✦ SUPER<span>NOVA</span></div>
+    <div class="search-wrap">
+      <input id="search" class="search" autocomplete="off" placeholder="Search games and categories">
+      <span class="search-icon">⌕</span>
+    </div>
+    <div class="top-actions">
+      <button class="top-action" title="Friends">♧</button>
+      <button class="top-action" title="Favorites">♡</button>
+      <button class="top-action" title="Notifications">♢</button>
+      <button class="top-action avatar">✦</button>
+    </div>
+  </div>
+</header>
+
+<div class="page">
+<main class="container">
+  <div id="categories" class="category-row">
+    <button class="cat active" data-cat="All">All</button>
+    <button class="cat" data-cat="Action">Action</button>
+    <button class="cat" data-cat="Arcade">Arcade</button>
+    <button class="cat" data-cat="Puzzle">Puzzle</button>
+    <button class="cat" data-cat="Racing">Racing</button>
+    <button class="cat" data-cat="Sports">Sports</button>
+    <button class="cat" data-cat="Adventure">Adventure</button>
+    <button class="cat" data-cat="Strategy">Strategy</button>
+    <button class="cat" data-cat="Horror">Horror</button>
+    <button class="cat" data-cat="Platformer">Platformer</button>
+  </div>
+
+  <section id="continueSection" class="section">
+    <h2 class="section-title">Continue playing <span class="arrow">›</span></h2>
+    <div id="continue" class="continue"><div class="loading">Your recently played games will appear here.</div></div>
+  </section>
+
+  <section class="section" id="popularSection">
+    <h2 class="section-title">Top games in 🇺🇸 today</h2>
+    <div id="heroGrid" class="hero-grid"><div class="loading">Loading the Supernova catalog…</div></div>
+  </section>
+
+  <section id="newSection" class="section">
+    <h2 class="section-title">Featured games</h2>
+    <div id="featured" class="game-grid"><div class="loading">Loading games…</div></div>
+  </section>
+
+  <section class="section">
+    <h2 class="section-title">New games</h2>
+    <div id="newGames" class="game-grid"></div>
+  </section>
+</main>
+</div>
+
+<footer>Supernova • A browser game portal built for GitHub Pages</footer>
+
+<div id="player">
+  <div class="player-top">
+    <button class="player-btn" onclick="closeGame()">← Back</button>
+    <div id="playerTitle" class="player-title">Loading game…</div>
+    <button class="player-btn" onclick="reloadGame()">↻</button>
+    <button class="player-btn" onclick="toggleFullscreen()">⛶</button>
+  </div>
+  <div class="player-main"><iframe id="game-frame" allow="fullscreen; autoplay; gamepad; pointer-lock" referrerpolicy="same-origin"></iframe></div>
+  <div class="player-note">Supernova game player</div>
+</div>
+
+<script>
+/*
+  SUPERNOVA CATALOG ENGINE
+  ------------------------
+  This is the important part: we do NOT manually list hundreds of games.
+
+  We use GitHub's Git Trees API to inspect the repository once, locate
+  playable index.html files, and build the catalog in the browser.
+
+  This mirrors the architecture of a real game portal: metadata -> cards ->
+  dedicated player. CrazyGames itself receives submitted web builds and
+  metadata through its Developer Portal, then hosts/serves the game build.
+  For a GitHub Pages version, Supernova keeps the source builds at their
+  repository and resolves them into playable URLs.
+*/
+
+const REPO = "Edward358-AI/HTML5-games";
+const BRANCH = "main";
+const ROOT = "html5";
+const API = `https://api.github.com/repos/${REPO}/git/trees/${BRANCH}?recursive=1`;
+const RAW = `/games/`;
+
+let games = [];
+let activeCategory = "All";
+let currentGame = null;
+
+const icons = ["🎮","🚀","👾","🏎️","⚔️","🧩","🏀","🧟","🛸","🏆","🧠","🔥","🪐","⚡","🎯","🕹️"];
+
+function titleFromPath(path){
+  const parts = path.split("/");
+  let name = parts[parts.length-2] || parts[parts.length-1] || "Game";
+  name = name.replace(/[-_]+/g," ").replace(/\b\w/g,c=>c.toUpperCase());
+  return name;
+}
+function categoryFromName(name){
+  const n=name.toLowerCase();
+  if(/race|driv|car|bike|moto/.test(n)) return "Racing";
+  if(/puzz|match|2048|sudoku|mahjong|word|chess|checkers/.test(n)) return "Puzzle";
+  if(/sport|soccer|football|basket|tennis|golf|pool|bowling/.test(n)) return "Sports";
+  if(/horror|zombie|ghost|scary|creep/.test(n)) return "Horror";
+  if(/platform|mario|sonic|jump|runner/.test(n)) return "Platformer";
+  if(/strategy|tower|war|battle/.test(n)) return "Strategy";
+  if(/adventure|rpg|quest/.test(n)) return "Adventure";
+  if(/shoot|gun|space|invader|fighter|action/.test(n)) return "Action";
+  return "Arcade";
+}
+function humanSort(a,b){return a.title.localeCompare(b.title,undefined,{numeric:true,sensitivity:"base"})}
+
+async function loadCatalog(){
+  try{
+    const res=await fetch("./games.json?"+Date.now(),{cache:"no-store"});
+    if(!res.ok) throw new Error("games.json could not be loaded");
+    const manifest=await res.json();
+    games=(manifest||[]).map((g,i)=>({
+      ...g,
+      icon:g.icon||icons[i%icons.length],
+      url:"./games/"+g.path
+    }));
+    if(!games.length) throw new Error("No playable games were found.");
+    renderAll();
+  }catch(err){
+    console.error(err);
+    document.getElementById("heroGrid").innerHTML=`<div class="empty">The game catalog could not be loaded.<br><small>${escapeHtml(err.message)}</small></div>`;
+    document.getElementById("featured").innerHTML=`<div class="empty">Make sure the Supernova GitHub Action has finished its first deployment.</div>`;
+  }
+}
+
+function escapeHtml(v){return String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
+
+function coverMarkup(g,big=false){
+  return g.image
+    ? `<img src="${g.image}" loading="lazy" onerror="this.remove();this.nextElementSibling.style.display='grid'"><div class="cover-placeholder" style="display:none">${g.icon}</div>`
+    : `<div class="cover-placeholder">${g.icon}</div>`;
+}
+
+function card(g){
+  return `<article class="game-card" onclick="openGame(${games.indexOf(g)})">
+    <div class="cover">${coverMarkup(g)}<span class="badge">${g.category}</span></div>
+    <div class="game-name">${escapeHtml(g.title)}</div>
+    <div class="game-meta">Free to play</div>
+  </article>`;
+}
+
+function heroCard(g,large=false){
+  return `<article class="hero-card ${large?"large":""}" onclick="openGame(${games.indexOf(g)})">
+    <div class="hero-bg"></div>
+    <div class="hero-art">${g.icon}</div>
+    <div class="hero-info"><div class="hero-title">${escapeHtml(g.title)}</div><div class="hero-sub">${g.category} • Free to play</div></div>
+    <button class="play-dot" aria-label="Play">▶</button>
+  </article>`;
+}
+
+function renderAll(){
+  renderHero();
+  renderGrids();
+  renderContinue();
+}
+function filtered(){
+  const q=document.getElementById("search").value.trim().toLowerCase();
+  return games.filter(g=>(activeCategory==="All"||g.category===activeCategory)&&(!q||g.title.toLowerCase().includes(q)||g.category.toLowerCase().includes(q)));
+}
+function renderHero(){
+  const list=filtered();
+  const picks=list.slice(0,4);
+  document.getElementById("heroGrid").innerHTML=picks.length?picks.map((g,i)=>heroCard(g,i===0)).join(""):`<div class="empty">No games found.</div>`;
+}
+function renderGrids(){
+  const list=filtered();
+  document.getElementById("featured").innerHTML=list.slice(0,36).map(card).join("")||`<div class="empty">No games found.</div>`;
+  document.getElementById("newGames").innerHTML=[...list].reverse().slice(0,36).map(card).join("");
+}
+function renderContinue(){
+  const ids=JSON.parse(localStorage.getItem("supernova_recent")||"[]");
+  const recent=ids.map(id=>games[id]).filter(Boolean);
+  const el=document.getElementById("continue");
+  el.innerHTML=recent.length?recent.slice(0,14).map(g=>`<article class="continue-card" onclick="openGame(${games.indexOf(g)})"><div class="cover">${coverMarkup(g)}</div><div class="name">${escapeHtml(g.title)}</div></article>`).join(""):`<div class="loading">Play a game and it will appear here.</div>`;
+}
+function remember(i){
+  let ids=JSON.parse(localStorage.getItem("supernova_recent")||"[]");
+  ids=[i,...ids.filter(x=>x!==i)].slice(0,20);
+  localStorage.setItem("supernova_recent",JSON.stringify(ids));
+}
+
+function openGame(i){
+  const g=games[i]; if(!g)return;
+  currentGame=i; remember(i); renderContinue();
+  document.getElementById("playerTitle").textContent=g.title;
+  document.getElementById("game-frame").src=g.url;
+  document.getElementById("player").style.display="flex";
+  document.body.style.overflow="hidden";
+}
+function closeGame(){
+  document.getElementById("game-frame").src="about:blank";
+  document.getElementById("player").style.display="none";
+  document.body.style.overflow="";
+}
+function reloadGame(){if(currentGame!==null)document.getElementById("game-frame").src=games[currentGame].url}
+function toggleFullscreen(){
+  const f=document.getElementById("game-frame");
+  if(document.fullscreenElement) document.exitFullscreen();
+  else if(f.requestFullscreen) f.requestFullscreen();
+}
+function randomGame(){if(games.length)openGame(Math.floor(Math.random()*games.length))}
+function scrollToId(id){document.getElementById(id)?.scrollIntoView({behavior:"smooth"})}
+function home(){window.scrollTo({top:0,behavior:"smooth"})}
+
+document.getElementById("search").addEventListener("input",()=>{renderHero();renderGrids()});
+document.querySelectorAll(".cat").forEach(btn=>btn.addEventListener("click",()=>{
+  document.querySelectorAll(".cat").forEach(x=>x.classList.remove("active"));
+  btn.classList.add("active");activeCategory=btn.dataset.cat;renderHero();renderGrids();
+}));
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape" && document.getElementById("player").style.display==="flex") closeGame();
+  if(e.key==="/" && document.activeElement!==document.getElementById("search")){e.preventDefault();document.getElementById("search").focus()}
+});
+loadCatalog();
+</script>
+</body>
+</html>
