@@ -1,0 +1,97 @@
+name: Deploy Supernova
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Supernova
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Download game library
+        run: |
+          rm -rf _game_source games
+          git clone --depth 1 https://github.com/Edward358-AI/HTML5-games.git _game_source
+          mkdir -p games
+          cp -a _game_source/html5/. games/
+          rm -rf _game_source
+
+      - name: Prepare Pages
+        run: |
+          touch games/.nojekyll
+          python3 - <<'PYGEN'
+          import json, os, re
+          root="games"
+          out=[]
+          image_ext={".png",".jpg",".jpeg",".webp",".gif"}
+          for base, dirs, files in os.walk(root):
+              for fn in files:
+                  if fn.lower() != "index.html":
+                      continue
+                  full=os.path.join(base,fn)
+                  rel=full[len(root)+1:].replace(os.sep,"/")
+                  # The source repository notes that some games put the playable
+                  # build in a nested play/ directory. Every discovered index.html
+                  # is therefore a candidate playable entry point.
+                  folder=os.path.dirname(full)
+                  title=os.path.basename(folder) or "Game"
+                  title=re.sub(r"[-_]+"," ",title).strip()
+                  title=" ".join(x.capitalize() for x in title.split())
+                  imgs=[]
+                  for x in os.listdir(folder):
+                      if os.path.splitext(x)[1].lower() in image_ext:
+                          imgs.append(x)
+                  img=None
+                  for x in imgs:
+                      if re.search(r"cover|thumb|thumbnail|screenshot|preview|icon",x,re.I):
+                          img=x; break
+                  if img is None and imgs:
+                      img=imgs[0]
+                  image=None
+                  if img:
+                      image=(os.path.relpath(os.path.join(folder,img),root)).replace(os.sep,"/")
+                  out.append({"title":title,"path":rel,"category":"Arcade","image":image})
+          # Remove duplicate paths and sort consistently.
+          seen=set(); clean=[]
+          for g in sorted(out,key=lambda x:x["title"].lower()):
+              if g["path"] not in seen:
+                  seen.add(g["path"]); clean.append(g)
+          # Basic category inference.
+          for g in clean:
+              n=g["title"].lower()
+              if re.search(r"race|driv|car|bike|moto",n): g["category"]="Racing"
+              elif re.search(r"puzz|match|2048|sudoku|mahjong|word|chess|checkers",n): g["category"]="Puzzle"
+              elif re.search(r"sport|soccer|football|basket|tennis|golf|pool|bowling",n): g["category"]="Sports"
+              elif re.search(r"horror|zombie|ghost|scary|creep",n): g["category"]="Horror"
+              elif re.search(r"platform|mario|sonic|jump|runner",n): g["category"]="Platformer"
+              elif re.search(r"strategy|tower|war|battle",n): g["category"]="Strategy"
+              elif re.search(r"adventure|rpg|quest",n): g["category"]="Adventure"
+              elif re.search(r"shoot|space|invader|fighter|action",n): g["category"]="Action"
+          with open("games.json","w",encoding="utf-8") as f: json.dump(clean,f,separators=(",",":"))
+          print("Generated",len(clean),"games")
+          PYGEN
+          mkdir -p _site
+          cp index.html _site/index.html
+          cp games.json _site/games.json
+          cp -a games _site/games
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
